@@ -1,0 +1,17 @@
+{
+    "name": "inpsyde/custom-plugin",
+    "description": "This plugin created for to test my knowledge and ability to working as a PHP & WordPress developer.",
+    "type": "wordpress-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Fazle Elahee",
+            "email": "felahee@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": { "CustomPlugin\\": "src/" }
+    }
+}
