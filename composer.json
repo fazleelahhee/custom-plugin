@@ -15,5 +15,8 @@
     },
     "autoload": {
         "psr-4": { "CustomPlugin\\": "src/" }
+    },
+    "extra": {
+        "installer-name": "inpsyde-custom-plugin"
     }
 }
