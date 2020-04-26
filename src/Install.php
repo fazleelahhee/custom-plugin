@@ -1,17 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: fazleelahee
- * Date: 23/04/2020
- * Time: 16:00
- */
 
 namespace WPCPlugin;
 
-
 class Install
 {
-    public function activate() {
-
+    public static function activate()
+    {
+        update_option(Plugin::PLUGIN_REWRITE_FLUSH_KEY, 0);
     }
 }

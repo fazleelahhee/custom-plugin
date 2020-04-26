@@ -22,10 +22,21 @@
  * @link       http://example.com
  * @since      1.0.0
  *
- * @package    Plugin_Name
+ * @package    Inpsyde Custom Plugin
  */
 
 // If uninstall not called from WordPress, then exit.
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+
+
+if (! class_exists('WPCPlugin\Plugin')) {
+	require_once __DIR__ . '/src/Plugin.php';
+}
+
+//Delete key from the option table
+delete_option(Plugin::PLUGIN_REWRITE_FLUSH_KEY);
+
+//clear flush from the database
+flush_rewrite_rules(false);

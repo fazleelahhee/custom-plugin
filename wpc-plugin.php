@@ -10,8 +10,27 @@
  **/
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-	die;
+if (!defined('WPINC')) {
+    die;
+}
+
+//set plugin name
+define('WPC_PLUGIN_NAME', 'wpc-plugin');
+
+//set plugin url
+define("WPC_PLUGIN_URL", trailingslashit(plugin_dir_url(__FILE__)));
+
+//set base directory
+define("WPC_PLUGIN_BASE_PATH", __DIR__);
+
+//set custom plugin endpiont if not exists.
+if (!defined('WPC_PLUGIN_ENDPOINT')) {
+    define('WPC_PLUGIN_ENDPOINT', 'wpcp-plugin');
+}
+
+//set external api endpoint to retrieve data.
+if (!defined('WPC_PLUGIN_API_ENDPOINT')) {
+    define('WPC_PLUGIN_API_ENDPOINT', 'https://jsonplaceholder.typicode.com');
 }
 
 /**
@@ -20,35 +39,33 @@ if ( ! defined( 'WPINC' ) ) {
  */
 function wpc_plugin()
 {
-	static $plugin;
+    static $plugin;
 
-	if (null !== $plugin) {
-		return $plugin;
-	}
+    if (null !== $plugin) {
+        return $plugin;
+    }
 
-	if (!defined('PHP_VERSION_ID') || PHP_VERSION_ID < 50400) {
-		return null;
-	}
+    if (!defined('PHP_VERSION_ID') || PHP_VERSION_ID < 70300) {
+        return null;
+    }
 
+    $pluginClassName = 'WPCPlugin\Plugin';
+    /** @var WPCPlugin\Plugin $plugin */
 
-	$pluginClassName = 'WPCPlugin\Plugin';
-	/** @var WPCPlugin\Plugin $plugin */
+    if (!class_exists($pluginClassName)) {
+        include_once "wpcp-autoload-register.php";
+    }
 
-	if (! class_exists($pluginClassName)) {
-		include_once "wpcp-autoload-register.php";
-		die("Plugin not exists");
-	}
+    $plugin = new $pluginClassName(__FILE__);
+    $plugin->init()
+        ->setDataSource(new \WPCPlugin\DataSource\Api());
 
-	die("Plgin exists");
-//	$plugin = new $pluginClassName(__FILE__);
-//	$plugin->init();
-//
-//	return $plugin;
+    return $plugin;
 }
 
 /**
  * Run
  */
 if (function_exists('add_action')) {
-	add_action('plugins_loaded', 'wpc_plugin');
+    add_action('plugins_loaded', 'wpc_plugin');
 }

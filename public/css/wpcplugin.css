@@ -1,0 +1,12 @@
+.ajax-loader {
+    min-height: 300px;
+    width: 100%;
+}
+
+.ajax-loader p {
+    text-align: center;
+}
+
+.wpc-plugin {
+    padding: 0 50px 0 50px;
+}
