@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WPCPlugin;
 
-use WPCPlugin\Admin\GeneralSettings;
 use WPCPlugin\Admin\Settings;
 use WPCPlugin\Contracts\IDataSource;
 
@@ -95,7 +94,7 @@ class Plugin
     {
         $urlPath = trim(parse_url(add_query_arg([]), PHP_URL_PATH), '/');
         if (preg_match('/' . $this->endpoint . '?$/', $urlPath)) {
-            // load the file if exists
+            // load the file if exists in working theme folder
             $load = locate_template('template-' . WPC_PLUGIN_NAME . '.php', true);
             if (!$load) {
                 //load default template
@@ -118,13 +117,19 @@ class Plugin
         ];
         try {
             $user = new User($this->dataSource, WPC_PLUGIN_API_ENDPOINT);
+            /**
+             * Recursivelly sanitised all data come from external api.
+             * because its not in our control and we don't know what type of data coming through
+             *so its must be sanitised.
+             */
             $output['data'] = $this->recursiveSanitizeField($user->allUser());
-            $output['status'] = 'success';
         } catch (\Exception $exp) {
             $output['data'] = $exp->getMessage();
-            $output['status'] = 'error';
-            wp_send_json_error($output);
+            wp_send_json_error($output, 422);
         }
+        /**
+         * Allow other plugins/ theme developer to modify ajax response.
+         */
         $output = apply_filters('wpcp_plugin_user_collection', $output);
         wp_send_json($output);
     }
@@ -151,6 +156,11 @@ class Plugin
             if (empty($userId)) {
                 throw new \Exception('User id is empty');
             }
+            /**
+             * Recursivelly sanitised all data come from external api.
+             * because its not in our control and we don't know what type of data coming through
+             *so its must be sanitised.
+             */
             $response = $this->recursiveSanitizeField($user->findUserById($userId));
             foreach ($response as $key => $value) {
                 $output['data'][$key] = $value;
@@ -163,9 +173,11 @@ class Plugin
             }
         } catch (\Exception $exp) {
             $output['data'] = $exp->getMessage();
-            $output['status'] = 'error';
-            wp_send_json_error($output);
+            wp_send_json_error($output, 422);
         }
+        /**
+         * Allow other plugins/ theme developer to modify ajax response.
+         */
         $output = apply_filters('wpcp_plugin_single_user', $output);
         wp_send_json($output);
     }
@@ -173,6 +185,11 @@ class Plugin
     public function addAjaxUrl(): void
     {
         $urlPath = trim(parse_url(add_query_arg([]), PHP_URL_PATH), '/');
+        /**
+         * Load assets only to this custom api.
+         * Its not a good idea loading assets globally,
+         * its affect to design and wasting of the resources.
+         */
         if (preg_match('/' . $this->endpoint . '?$/', $urlPath)) {
             ?>
             <script type="text/javascript">
@@ -185,6 +202,11 @@ class Plugin
 
     public function wpcpEnqueueScripts(): void
     {
+        /**
+         * Load assets only to this custom api.
+         * Its not a good idea loading assets globally,
+         * its affect to design and wasting of the resources.
+         */
         $urlPath = trim(parse_url(add_query_arg([]), PHP_URL_PATH), '/');
         if (preg_match('/' . $this->endpoint . '?$/', $urlPath)) {
             $js = WPC_PLUGIN_URL . 'public/js/wpcplugin.js';

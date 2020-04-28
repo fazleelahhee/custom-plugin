@@ -1,6 +1,6 @@
 # Custom plugin ( Inpsyde Developer Coding test)
 
-Purpose of this plugin is Inpsyde evaluate my PHP programing skills & coding standard/ WordPress Coding standard as well as my communications skills.
+Purpose of this plugin is Inpsyde evaluate my PHP programming skills & coding standard/ WordPress Coding standard as well as my communications skills.
 
 ## Task description
 
@@ -14,9 +14,9 @@ Each row in the HTML table will show the details for a user. The column's id, na
 
 ### Features
 
-* Admin can able to update custom endpoint from plugins settings page.
+* Admin can able to update custom endpoint from the plugins settings page.
 * Default template override
-* Filter hook available for update ajax respose before dispatch
+* Filter hook available for update ajax response before dispatch
 * Cache API response
 
 ## Installation
@@ -26,7 +26,7 @@ Each row in the HTML table will show the details for a user. The column's id, na
 * PHP version version >= 7.3.0
 
 ### Installation via composer
-For this plugin development I use composer base ["WordPress Boilerplate"](https://roots.io/bedrock/).
+For this plugin development, I use composer base ["WordPress Boilerplate"](https://roots.io/bedrock/).
 
 add to composer.json
 ```
@@ -44,7 +44,7 @@ add to composer.json
     }
 ```
 
-If you use composer to pull plugin from repository, you have to make sure plugin installations path setup correctly.
+If you use composer to pull plugin from the repository, you have to make sure plugin installations path setup correctly.
 
 here is the example:
 ```
@@ -58,13 +58,13 @@ here is the example:
    }
 ```
 
-Once composer.json file updated, than need to run composer update command to pull plugins from the git repository.
+Once composer.json file updated, then need to run composer update command to pull plugins from the git repository.
 
 ```
     $composer update
 ```
 
-When composer update complete, than goto WordPress Admin -> Plugins, then activate "Inpsyde Custom Plugin"
+When composer update complete, then go to WordPress Admin -> Plugins then activate "Inpsyde Custom Plugin"
 
 ### Installation without composer
 
@@ -77,23 +77,23 @@ Clone from the repository
     $git clone https://fazleelahee@bitbucket.org/fazleelahee/inpsyde-custom-plugin.git .
 ```
 
-When git clone is done, than goto the WordPress Admin -> Plugins, then activate "Inpsyde Custom Plugin"
+When git clone is done, then go to the WordPress Admin -> Plugins then activate "Inpsyde Custom Plugin"
 
 ### Differences both type of WordPress installation
-Composer base WordPress installation plugin classes are loaded via composer auto loader. However, standard WordPress installation I have added SPL auto loader to load the class.
+Composer base WordPress installation plugin classes are loaded via composer autoloader. However, standard WordPress installation I have added SPL autoloader to load the class.
 
 
 ## Template Override
-Default template can be override by placing "template-wpc-plugin.php" in current working theme folder. Frontend design can modify/ update without modifying file in the plugin.
+The default template can be overridden by placing "template-wpc-plugin.php" in the current working theme folder. Frontend design can modify/ update without modifying the file in the plugin.
 
 ## Filtering/ mutating API response
 
-You can able to add/remove or edit table header using filter hook. Available filters:
+You can able to add/remove or edit table header using a filter hook. Available filters:
 * wpcp_plugin_user_collection
 * wpcp_plugin_single_user
 
 **wpcp_plugin_user_collection**
-Using this filter you can able to add/remove column from user list table. Following example I will add "website" column user table without modifying plugin code.
+Using this filter you can able to add/remove a column from user list table. Following the example, I will add "website" column user table without modifying plugin code.
 
 **Note:** Place this code into functions.php or your custom plugin.
 
@@ -109,7 +109,7 @@ function modify_users_table ($data)
  ```
 
 **wpcp_plugin_single_user**
-This filter allow you to modify information displaying in the frontend. For example, if you want to displaying user website link instead of the plain text.
+This filter allows you to modify information displaying in the frontend. For example, if you want to display the user website link instead of the plain text.
 
 **Note:** Place this code into functions.php or your custom plugin.
 
@@ -125,10 +125,13 @@ function user_website_link ($data)
 ```
 
 ### Cache Api Response
-You can able to cache API adding constant to your wp-config.php file.
+You can able to enable cache API adding "constant" to your wp-config.php file.
 
 ```
-/** Cache API Response **/
+/**
+* Cache API Response
+* if assign true to this constant - it will enable the api response cache.
+**/
 define('WPCPLUGIN_API_CACHE', true);
 ```
 
@@ -177,6 +180,13 @@ $./vendor/bin/phpcs
 
 Time: 2.24 secs; Memory: 16MB
 ```
+
+## Nice to have
+
+* ability to enable/ disable from settings
+* ability to manage api response from admin settings & manage which field show.
+* filter/ order users list
+* displaying user information in modal may be?
 
 
 
