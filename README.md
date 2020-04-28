@@ -97,7 +97,7 @@ Using this filter you can able to add/remove a column from user list table. Foll
 
 **Note:** Place this code into functions.php or your custom plugin.
 
- ```
+```
 add_filter('wpcp_plugin_user_collection', 'modify_users_table');
 function modify_users_table ($data)
 {
@@ -106,7 +106,7 @@ function modify_users_table ($data)
 		return $data;
 	}
 }
- ```
+```
 
 **wpcp_plugin_single_user**
 This filter allows you to modify information displaying in the frontend. For example, if you want to display the user website link instead of the plain text.
