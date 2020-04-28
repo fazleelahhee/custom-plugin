@@ -1,45 +1,182 @@
-**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
+# Custom plugin ( Inpsyde Developer Coding test)
 
-When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
+Purpose of this plugin is Inpsyde evaluate my PHP programing skills & coding standard/ WordPress Coding standard as well as my communications skills.
 
-*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video](https://youtu.be/0ocf7u76WSo) for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
+## Task description
 
----
+When installed, the plugin has to make available a custom endpoint on the WordPress site. With “custom endpoint” we mean an arbitrary URL not recognized by WP as a standard URL, like a permalink or so.
 
-## Edit a file
+When a visitor navigates to that endpoint, the plugin has to send an HTTP request to a REST API endpoint. The API is available at https://jsonplaceholder.typicode.com and the endpoint to call is /users.
 
-You’ll start by editing this README file to learn how to edit a file in Bitbucket.
+The plugin will parse the JSON response and will use it to build and display an HTML table.
 
-1. Click **Source** on the left side.
-2. Click the README.md link from the list of files.
-3. Click the **Edit** button.
-4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*
-5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you’ll see the change you just made.
-6. Go back to the **Source** page.
+Each row in the HTML table will show the details for a user. The column's id, name, and username are mandatory
 
----
+### Features
 
-## Create a file
+* Admin can able to update custom endpoint from plugins settings page.
+* Default template override
+* Filter hook available for update ajax respose before dispatch
+* Cache API response
 
-Next, you’ll add a new file to this repository.
+## Installation
 
-1. Click the **New file** button at the top of the **Source** page.
-2. Give the file a filename of **contributors.txt**.
-3. Enter your name in the empty file space.
-4. Click **Commit** and then **Commit** again in the dialog.
-5. Go back to the **Source** page.
+### Minimum requirements
+* WordPress latest version
+* PHP version version >= 7.3.0
 
-Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
+### Installation via composer
+For this plugin development I use composer base ["WordPress Boilerplate"](https://roots.io/bedrock/).
 
----
+add to composer.json
+```
+  "repositories": [
+    ...
+    {
+      "url": "https://bitbucket.org/fazleelahee/inpsyde-custom-plugin.git",
+      "type": "git"
+    }
+  ],
 
-## Clone a repository
+  "require": {
+      ....
+      "inpsyde/custom-plugin": "master"
+    }
+```
 
-Use these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first](https://www.sourcetreeapp.com/). If you prefer to clone from the command line, see [Clone a repository](https://confluence.atlassian.com/x/4whODQ).
+If you use composer to pull plugin from repository, you have to make sure plugin installations path setup correctly.
 
-1. You’ll see the clone button under the **Source** heading. Click that button.
-2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.
-3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you’d like to and then click **Clone**.
-4. Open the directory you just created to see your repository’s files.
+here is the example:
+```
+   "extra": {
+     "installer-paths": {
+       "web/app/mu-plugins/{$name}/": ["type:wordpress-muplugin"],
+       "web/app/plugins/{$name}/": ["type:wordpress-plugin"],
+       "web/app/themes/{$name}/": ["type:wordpress-theme"]
+     },
+     "wordpress-install-dir": "web/wp"
+   }
+```
 
-Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
+Once composer.json file updated, than need to run composer update command to pull plugins from the git repository.
+
+```
+    $composer update
+```
+
+When composer update complete, than goto WordPress Admin -> Plugins, then activate "Inpsyde Custom Plugin"
+
+### Installation without composer
+
+Clone from the repository
+
+```
+    $cd pathToWordPressRootDir/wp-contents/plugins
+    $mkdir custom-plugin
+    $cd custom-plugin
+    $git clone https://fazleelahee@bitbucket.org/fazleelahee/inpsyde-custom-plugin.git .
+```
+
+When git clone is done, than goto the WordPress Admin -> Plugins, then activate "Inpsyde Custom Plugin"
+
+### Differences both type of WordPress installation
+Composer base WordPress installation plugin classes are loaded via composer auto loader. However, standard WordPress installation I have added SPL auto loader to load the class.
+
+
+## Template Override
+Default template can be override by placing "template-wpc-plugin.php" in current working theme folder. Frontend design can modify/ update without modifying file in the plugin.
+
+## Filtering/ mutating API response
+
+You can able to add/remove or edit table header using filter hook. Available filters:
+* wpcp_plugin_user_collection
+* wpcp_plugin_single_user
+
+**wpcp_plugin_user_collection**
+Using this filter you can able to add/remove column from user list table. Following example I will add "website" column user table without modifying plugin code.
+
+**Note:** Place this code into functions.php or your custom plugin.
+
+ ```
+add_filter('wpcp_plugin_user_collection', 'modify_users_table');
+function modify_users_table ($data)
+{
+	if(isset($data['field_display'])) {
+		$data['field_display'][] = ['key' => 'website', 'label' => 'Website', 'link' => 'n'];
+		return $data;
+	}
+}
+ ```
+
+**wpcp_plugin_single_user**
+This filter allow you to modify information displaying in the frontend. For example, if you want to displaying user website link instead of the plain text.
+
+**Note:** Place this code into functions.php or your custom plugin.
+
+```
+add_filter('wpcp_plugin_single_user', 'user_website_link');
+function user_website_link ($data)
+{
+	if(isset($data['data']['website'])) {
+		$data['data']['website'] = '<a href="'.$data['data']['website'].'">'.$data['data']['website'].'</a>';
+	}
+	return $data;
+}
+```
+
+### Cache Api Response
+You can able to cache API adding constant to your wp-config.php file.
+
+```
+/** Cache API Response **/
+define('WPCPLUGIN_API_CACHE', true);
+```
+
+### Fontend and JavaScript
+I use ajax request to populate user list and user details in frontend. I use webpack to compile typescript to javascript.
+
+**Installing npm dependancies**
+
+```
+$cd pathToWordPressRoot/wp-content/plugins/custom-plugin/
+$npm install
+```
+
+Compiling typescript
+
+```
+$npm run build
+
+````
+
+Build for production
+
+```
+$npn run production
+```
+
+### PHPUnit tests
+
+```
+$./vendor/bin/phpunit tests
+PHPUnit 9.2-g1899b60ea by Sebastian Bergmann and contributors.
+
+...........                                                       11 / 11 (100%)
+
+Time: 00:00.332, Memory: 4.00 MB
+
+OK (11 tests, 11 assertions)
+
+````
+
+### PHPCS
+
+```
+$./vendor/bin/phpcs
+................... 19 / 19 (100%)
+
+Time: 2.24 secs; Memory: 16MB
+```
+
+
+

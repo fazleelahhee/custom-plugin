@@ -1,6 +1,7 @@
 const $jq = jQuery || undefined;
 
 declare const ajaxurl:string;
+declare const ajaxnonce:string;
 
 interface IBase {
     element: any;
@@ -63,42 +64,43 @@ class UserCollection extends Base {
     }
 
     template(data:any) {
-        let html = `<h4>List of Users</h4>
-                        <table class="table">
-                              <thead>
-                                <tr> `;
+        let thead = '';
+        let tbody = '';
         data.field_display.forEach((field:any) => {
-            html += `<th scope="col">${field.label}</th>`;
+            thead += `<th scope="col">${field.label}</th>`;
         });
-        html += `       </tr>
-                              </thead>
-                              <tbody>`;
+
         if (data.data.length) {
             data.data.forEach((user:any) => {
-                html += `   <tr>`;
+                tbody += `   <tr>`;
                 data.field_display.forEach((field:any) => {
                     if (field.link === 'y') {
-                        html += `<td><a href="#" class="wpcp-view-user" data-user-id="${user.id}">${user[field.key]}</a></th>`;
+                        tbody += `<td><a href="#" class="wpcp-view-user" data-user-id="${user.id}">${user[field.key]}</a></th>`;
                     } else {
-                        html += `<td>${user[field.key]}</th>`;
+                        tbody += `<td>${user[field.key]}</th>`;
                     }
 
                 });
-                html += `   </tr>`;
+                tbody += `   </tr>`;
             });
         } else {
-            html += `           <tr>
+            tbody += `           <tr>
                                   <th scope="row" colspan="${data.field_display.length}">No User found!</th>
                                 </tr>`;
         }
 
-        html += `
+        this.html = `<h4>List of Users</h4>
+                        <table class="table">
+                              <thead>
+                                <tr>
+                                 ${thead}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                ${tbody}
                               </tbody>
                             </table>
-                            <div class="wpcp-single-user"></div>
-                            `;
-
-        this.html = html;
+                            <div class="wpcp-single-user"></div>`;;
     }
 }
 
@@ -119,7 +121,7 @@ class User extends Base {
                 }
 
                 response.json().then((data) => {
-                    this.template(data.data);
+                    this.template(data);
                     this.render();
                 });
             }
@@ -131,54 +133,22 @@ class User extends Base {
     }
 
     template(data:any) {
-        let html = `<div class="container pt-5">
-                        <h4 class="text-center">Selected User ID: ${data.id} </h4>
-                        <div class="row">
-                            <div class="col text-right mr-2 font-weight-bold">Name</div>
-                            <div class="col ml-2 font-weight-light">${data.name}</div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col text-right mr-2 font-weight-bold">Email</div>
-                            <div class="col ml-2 font-weight-light">${data.email}</div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col text-right mr-2 font-weight-bold">Username</div>
-                            <div class="col ml-2 font-weight-light">${data.username}</div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col text-right mr-2 font-weight-bold">Telephone</div>
-                            <div class="col ml-2 font-weight-light">${data.phone}</div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col text-right mr-2 font-weight-bold">Website</div>
-                            <div class="col ml-2 font-weight-light"><a href="${data.website}">${data.website}</a></div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col text-right mr-2 font-weight-bold">Address</div>
-                            <div class="col ml-2 font-weight-light">
-                                ${data.address.street} <br />
-                                ${data.address.suite} <br />
-                                ${data.address.city} <br />
-                                ${data.address.zipcode} <br />
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col text-right mr-2 font-weight-bold">Company</div>
-                            <div class="col ml-2 font-weight-light">${data.company.name}</div>
-                        </div>
-                    </div>`;
-        this.html = html;
+        let tmp = '';
+        data.field_display.forEach((field:any) => {
+            tmp += `<div class="row">
+                            <div class="col text-right mr-2 font-weight-bold">${field.label}</div>
+                            <div class="col ml-2 font-weight-light">${data.data[field.key]}</div>
+                        </div>`
+        });
+        this.html = `<div class="container pt-5">
+                        <h4 class="text-center">Selected User ID: ${data.data.id} </h4>
+                        ${tmp}
+                   </div>`;
     }
 }
 
 
-$jq(document).ready(function ($) {
+$jq(($) => {
     /**
      * Load user list when page load
      * @type {Users}

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WPCPlugin\Contracts;
 
 interface IDataSource
 {
-    public function setPath($path);
-    public function getContent();
+    public function updatePath(string $path);
+    public function content();
 }

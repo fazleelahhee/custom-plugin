@@ -1,6 +1,10 @@
 <?php
+
+namespace WPCPlugin\Tests;
+
 use PHPUnit\Framework\TestCase;
 use WPCPlugin\Plugin;
+
 class PluginTest extends TestCase
 {
     /**
@@ -18,29 +22,32 @@ class PluginTest extends TestCase
         $this->plugin = null;
     }
 
-    public function testIsInitFunctionExists() {
+    public function testIsInitFunctionExists()
+    {
         $this->assertTrue(
             method_exists($this->plugin, 'init'),
             'Plugin Class does not have method init()'
         );
     }
 
-    public function testIsReWriteInitFunctionExists() {
+    public function testIsReWriteInitFunctionExists()
+    {
         $this->assertTrue(
             method_exists($this->plugin, 'rewriteInit'),
             'Plugin Class does not have method rewriteInit()'
         );
     }
 
-    public function testIsQueryVarsFunctionExists() {
+    public function testIsQueryVarsFunctionExists()
+    {
         $this->assertTrue(
-            method_exists($this->plugin, 'queryVars'),
-            'Plugin Class does not have method queryVars()'
+            method_exists($this->plugin, 'recursiveSanitizeField'),
+            'Plugin Class does not have method recursiveSanitizeField()'
         );
     }
 
-
-    public function testIsTemplateFunctionExists() {
+    public function testIsTemplateFunctionExists()
+    {
         $this->assertTrue(
             method_exists($this->plugin, 'template'),
             'Plugin Class does not have method template()'

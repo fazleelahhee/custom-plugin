@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WPCPlugin;
 
 use WPCPlugin\Contracts\IDataSource;
@@ -36,11 +38,11 @@ class User
      * @return array
      * @throws \Exception
      */
-    public function getUsers($collectionEndPoint = "users")
+    public function allUser(string $collectionEndPoint = "users"): array
     {
         $response = $this->dataSource
-            ->setPath($this->endpiont . "/" . $collectionEndPoint)
-            ->getContent();
+            ->updatePath($this->endpiont . "/" . $collectionEndPoint)
+            ->content();
         $userCollection = json_decode($response, true);
 
         if (empty($userCollection)) {
@@ -57,11 +59,11 @@ class User
      * @return array
      * @throws \Exception
      */
-    public function getUserById(int $userId, $collectionEndPoint = "users")
+    public function findUserById(int $userId, string $collectionEndPoint = "users"): array
     {
         $response = $this->dataSource
-            ->setPath($this->endpiont . "/{$collectionEndPoint}/{$userId}")
-            ->getContent();
+            ->updatePath($this->endpiont . "/{$collectionEndPoint}/{$userId}")
+            ->content();
         $user = json_decode($response, true);
 
         if (empty($user)) {

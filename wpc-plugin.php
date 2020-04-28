@@ -3,8 +3,9 @@
 /**
  * Plugin Name: Inpsyde Custom Plugin
  * Plugin URI: https://bitbucket.org/fazleelahee/inpsyde-custom-plugin/
- * Description: This plugin created for to test my knowledge and ability to working as a PHP & WordPress developer.
- * Version: 1.0
+ * Description: Populate user list and individual infromation from external api.
+ *
+ * Version: 1.0.0
  * Author: Fazle Elahee
  * Author URI: http://fazleelahee.xyz/
  **/
@@ -23,11 +24,6 @@ define("WPC_PLUGIN_URL", trailingslashit(plugin_dir_url(__FILE__)));
 //set base directory
 define("WPC_PLUGIN_BASE_PATH", __DIR__);
 
-//set custom plugin endpiont if not exists.
-if (!defined('WPC_PLUGIN_ENDPOINT')) {
-    define('WPC_PLUGIN_ENDPOINT', 'wpcp-plugin');
-}
-
 //set external api endpoint to retrieve data.
 if (!defined('WPC_PLUGIN_API_ENDPOINT')) {
     define('WPC_PLUGIN_API_ENDPOINT', 'https://jsonplaceholder.typicode.com');
@@ -36,6 +32,8 @@ if (!defined('WPC_PLUGIN_API_ENDPOINT')) {
 /**
  * Function for getting plugin class
  *
+ * phpcs:disable Inpsyde.CodeQuality.ReturnTypeDeclaration.NoReturnType
+ * phpcs:disable NeutronStandard.Globals.DisallowGlobalFunctions.GlobalFunctions
  */
 function wpc_plugin()
 {
@@ -53,12 +51,17 @@ function wpc_plugin()
     /** @var WPCPlugin\Plugin $plugin */
 
     if (!class_exists($pluginClassName)) {
+        /**
+         * Register namespace with SPL auto loader, instead of adding file individually.
+         * Its more scalable and safest options I think.
+         */
         include_once "wpcp-autoload-register.php";
     }
 
-    $plugin = new $pluginClassName(__FILE__);
+    $plugin = new $pluginClassName();
+
     $plugin->init()
-        ->setDataSource(new \WPCPlugin\DataSource\Api());
+        ->addDataSource(new \WPCPlugin\DataSource\Api());
 
     return $plugin;
 }

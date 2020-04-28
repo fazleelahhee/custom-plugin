@@ -15,7 +15,10 @@
         "composer/installers": "~1.0"
     },
     "autoload": {
-        "psr-4": { "WPCPlugin\\": "src/" }
+        "psr-4": {
+            "WPCPlugin\\": "src/",
+            "WPCPlugin\\Tests\\": "tests/"
+        }
     },
     "require-dev": {
         "inpsyde/php-coding-standards": "^1.0@dev",

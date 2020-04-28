@@ -26,17 +26,17 @@
  */
 
 // If uninstall not called from WordPress, then exit.
-if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-	exit;
+if (!defined('WP_UNINSTALL_PLUGIN')) {
+    exit;
 }
 
-
-if (! class_exists('WPCPlugin\Plugin')) {
-	require_once __DIR__ . '/src/Plugin.php';
+if (!class_exists('WPCPlugin\Plugin')) {
+    include_once "wpcp-autoload-register.php";
 }
 
 //Delete key from the option table
-delete_option(Plugin::PLUGIN_REWRITE_FLUSH_KEY);
+delete_option(\WPCPlugin\Plugin::PLUGIN_REWRITE_FLUSH_KEY);
+delete_option(\WPCPlugin\Admin\Settings::WPCPLUGIN_CUSTOM_ENDPOINT_KEY);
 
 //clear flush from the database
 flush_rewrite_rules(false);
