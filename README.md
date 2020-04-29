@@ -91,7 +91,7 @@ The default template can be overridden by placing "template-wpc-plugin.php" in t
 You can able to add/remove or edit table header using a filter hook.
 Available filters:
 
-* wpcp_plugin_user_collection, 
+* wpcp_plugin_user_collection,
 * wpcp_plugin_single_user
 
 **wpcp_plugin_user_collection**
