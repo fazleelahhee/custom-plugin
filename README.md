@@ -153,7 +153,7 @@ Compiling typescript
 ```
 $npm run build
 
-````
+```
 
 Build for production
 
