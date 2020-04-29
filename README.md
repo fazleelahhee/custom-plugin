@@ -1,6 +1,6 @@
 # Custom plugin ( Inpsyde Developer Coding test)
 
-Purpose of this plugin is Inpsyde evaluate my PHP programming skills & coding standard/ WordPress Coding standard as well as my communications skills.
+Purpose of this plugin is to enable Inpsyde to evaluate my PHP programming skills & coding standards/ WordPress Coding standards as well as my communications skills.
 
 ## Task description
 
@@ -12,11 +12,12 @@ The plugin will parse the JSON response and will use it to build and display an 
 
 Each row in the HTML table will show the details for a user. The column's id, name, and username are mandatory
 
+
 ### Features
 
-* Admin can able to update custom endpoint from the plugins settings page.
+* Admin will be able to update custom endpoints via the plugin’s settings page.
 * Default template override
-* Filter hook available for update ajax response before dispatch
+* Filter hook is available to update ajax response before dispatch
 * Cache API response
 
 ## Installation
@@ -26,9 +27,9 @@ Each row in the HTML table will show the details for a user. The column's id, na
 * PHP version version >= 7.3.0
 
 ### Installation via composer
-For this plugin development, I use composer base ["WordPress Boilerplate"](https://roots.io/bedrock/).
+For this plugin development, I used composer base ["WordPress Boilerplate"](https://roots.io/bedrock/).
 
-add to composer.json
+you need to add following code to composer.json to install plugin your WordPress installation.
 ```
   "repositories": [
     ...
@@ -44,7 +45,7 @@ add to composer.json
     }
 ```
 
-If you use composer to pull plugin from the repository, you have to make sure plugin installations path setup correctly.
+If you use composer to pull the plugin from the repository, you have to make sure plugin installation path is setup correctly.
 
 here is the example:
 ```
@@ -58,7 +59,7 @@ here is the example:
    }
 ```
 
-Once composer.json file updated, then need to run composer update command to pull plugins from the git repository.
+Once composer.json file is updated, then you need to run composer update command to pull plugins from the git repository.
 
 ```
     $composer update
@@ -79,23 +80,23 @@ Clone from the repository
 
 When git clone is done, then go to the WordPress Admin -> Plugins then activate "Inpsyde Custom Plugin"
 
-### Differences both type of WordPress installation
-Composer base WordPress installation plugin classes are loaded via composer autoloader. However, standard WordPress installation I have added SPL autoloader to load the class.
-
+### Differences between both types of WordPress installation
+Composer base WordPress installation plugin classes are loaded via composer autoloader. However, with the standard WordPress installation I have added SPL autoloader to load the classes.
 
 ## Template Override
-The default template can be overridden by placing "template-wpc-plugin.php" in the current working theme folder. Frontend design can modify/ update without modifying the file in the plugin.
+
+The default template can be overridden by placing "template-wpc-plugin.php" in the current working theme folder. Frontend design can be modified/ updated without modifying the file in the plugin.
 
 ## Filtering/ mutating API response
 
-You can able to add/remove or edit table header using a filter hook.
+You are able to add/remove or edit table header using a filter hook.
 Available filters:
 
 * wpcp_plugin_user_collection,
 * wpcp_plugin_single_user
 
 **wpcp_plugin_user_collection**
-Using this filter you can able to add/remove a column from user list table. Following the example, I will add "website" column user table without modifying plugin code.
+Using this filter you are able to add/remove a column from the user list table. Following the example, I will add a "website" column user table without modifying plugin code
 
 **Note:** Place this code into functions.php or your custom plugin.
 
@@ -127,20 +128,20 @@ function user_website_link ($data)
 ```
 
 ### Cache Api Response
-You can able to enable cache API adding "constant" to your wp-config.php file.
+You are able to enable cache API adding "constant" to your wp-config.php file.
 
 ```
 /**
 * Cache API Response
-* if assign true to this constant - it will enable the api response cache.
+* if assigned true to this constant - it will enable the api response cache.
 **/
 define('WPCPLUGIN_API_CACHE', true);
 ```
 
 ### Fontend and JavaScript
-I use ajax request to populate user list and user details in frontend. I use webpack to compile typescript to javascript.
+I use an ajax request to populate the user list and user details in the frontend. I use webpack to compile typescript to javascript.
 
-**Installing npm dependancies**
+**Installing npm dependencies**
 
 ```
 $cd pathToWordPressRoot/wp-content/plugins/custom-plugin/
@@ -162,6 +163,8 @@ $npn run production
 
 ### PHPUnit tests
 
+Before run the PHP unit test to make sure composer dependencies updated.
+
 ```
 $./vendor/bin/phpunit tests
 PHPUnit 9.2-g1899b60ea by Sebastian Bergmann and contributors.
@@ -172,9 +175,11 @@ Time: 00:00.332, Memory: 4.00 MB
 
 OK (11 tests, 11 assertions)
 
-````
+```
 
 ### PHPCS
+
+Before run the PHP code sniffer to make sure composer dependencies updated.
 
 ```
 $./vendor/bin/phpcs
