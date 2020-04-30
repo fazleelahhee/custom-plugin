@@ -54,6 +54,16 @@ class Plugin
         Install::activate();
         $this->endpoint = get_option(Settings::WPCPLUGIN_CUSTOM_ENDPOINT_KEY);
 
+        $this->addHooks();
+
+        $settsion = new Settings();
+        $settsion->init();
+
+        return $this;
+    }
+
+    public function addHooks()
+    {
         add_action('init', [$this, 'rewriteInit']);
         add_action('init', [$this, 'template']);
 
@@ -65,11 +75,6 @@ class Plugin
 
         add_action('wp_head', [$this, 'addAjaxUrl']);
         add_action('wp_enqueue_scripts', [$this, 'wpcpEnqueueScripts']);
-
-        $settsion = new Settings();
-        $settsion->init();
-
-        return $this;
     }
 
     /**
