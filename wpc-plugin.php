@@ -59,11 +59,7 @@ function wpc_plugin()
     }
 
     $plugin = new $pluginClassName();
-
-    $dataSourceFactory = new \WPCPlugin\DataSource\DataSourceFactory();
-    $plugin->init()
-        ->addDataSource($dataSourceFactory->createApi());
-
+    $plugin->init();
     return $plugin;
 }
 

@@ -1,12 +1,13 @@
 <?php
 
-namespace WPCPlugin\Tests;
+namespace WPCPlugin\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use WPCPlugin\Tests\WPCPluginTestCase;
 use WPCPlugin\User;
 use WPCPlugin\DataSource\File;
 
-class UserTest extends TestCase
+class UserTest extends WPCPluginTestCase
 {
     /**
      * @var $user User
@@ -16,19 +17,13 @@ class UserTest extends TestCase
 
     private $mockApi;
 
-    private $allUsersJson;
-
-    private $singleUserJson;
-
     public function setUp(): void
     {
+        parent::setUp();
         $this->mockApi = \Mockery::mock('WPCPlugin\Contracts\IDataSource');
         $this->mockApi->shouldReceive('updatePath')
             ->andReturnSelf();
         $this->user = new User($this->mockApi, '/');
-
-        $this->allUsersJson = file_get_contents(__DIR__ . '/assets/users.json');
-        $this->singleUserJson =  file_get_contents(__DIR__ . '/assets/users/1.json');
     }
 
     public function testIsCreatedValidClass()
@@ -78,14 +73,14 @@ class UserTest extends TestCase
     public function testCanHaveExpectedNoOfArray()
     {
         $this->mockApi->shouldReceive('content')
-            ->andReturn($this->allUsersJson);
+            ->andReturn($this->userCollectionJson);
         $this->assertEquals(10, count($this->user->allUser()));
     }
 
     public function testExpectedKeyExistsInUserArray()
     {
         $this->mockApi->shouldReceive('content')
-            ->andReturn($this->singleUserJson);
+            ->andReturn($this->userJson);
 
         $user = $this->user->findUserById(1);
         $this->assertArrayHasKey('username', $user);
@@ -95,7 +90,5 @@ class UserTest extends TestCase
     {
         $this->user = null;
         $this->mockApi = null;
-        $this->allUsersJson = '';
-        $this->singleUserJson = '';
     }
 }

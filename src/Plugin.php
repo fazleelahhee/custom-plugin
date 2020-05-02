@@ -6,6 +6,8 @@ namespace WPCPlugin;
 
 use WPCPlugin\Admin\Settings;
 use WPCPlugin\Contracts\IDataSource;
+use WPCPlugin\Hooks\UserListsHook;
+use WPCPlugin\Hooks\UserHook;
 
 class Plugin
 {
@@ -23,28 +25,11 @@ class Plugin
     public const PLUGIN_REWRITE_FLUSH_KEY = 'wpcpplugins_permalink_flushed';
 
     /**
-     * Data Source
-     *
-     * @var $dataSource iDataSource
-     */
-    protected $dataSource;
-
-    /**
      * Custom endpoint
      *
      * @var string
      */
     protected $endpoint = '';
-
-    /**
-     * @param iDataSource $dataSource
-     * @return $this
-     */
-    public function addDataSource(IDataSource $dataSource): Plugin
-    {
-        $this->dataSource = $dataSource;
-        return $this;
-    }
 
     /**
      * Init all actions and filters
@@ -67,11 +52,13 @@ class Plugin
         add_action('init', [$this, 'rewriteInit']);
         add_action('init', [$this, 'template']);
 
-        add_action("wp_ajax_wpcplugin_user_collection", [$this, 'userCollection']);
-        add_action("wp_ajax_nopriv_wpcplugin_user_collection", [$this, 'userCollection']);
+        $userListHook = new UserListsHook();
+        add_action("wp_ajax_wpcplugin_user_collection", [$userListHook, 'jsonDispatch']);
+        add_action("wp_ajax_nopriv_wpcplugin_user_collection", [$userListHook, 'jsonDispatch']);
 
-        add_action("wp_ajax_wpcplugin_user", [$this, "user"]);
-        add_action("wp_ajax_nopriv_wpcplugin_user", [$this, "user"]);
+        $userHook = new UserHook();
+        add_action("wp_ajax_wpcplugin_user", [$userHook, "jsonDispatch"]);
+        add_action("wp_ajax_nopriv_wpcplugin_user", [$userHook, "jsonDispatch"]);
 
         add_action('wp_head', [$this, 'addAjaxUrl']);
         add_action('wp_enqueue_scripts', [$this, 'wpcpEnqueueScripts']);
@@ -107,84 +94,6 @@ class Plugin
             }
             exit(); // just exit if template was found and loaded
         }
-    }
-
-    public function userCollection(): void
-    {
-        $output = [
-            'field_display' => [
-                ['key' => 'id', 'label' => 'ID', 'link' => 'y'],
-                ['key' => 'name', 'label' => 'Name', 'link' => 'y'],
-                ['key' => 'username', 'label' => 'Username', 'link' => 'y'],
-                ['key' => 'email', 'label' => 'Email', 'link' => 'n'],
-                ['key' => 'phone', 'label' => 'Telephone', 'link' => 'n'],
-            ],
-        ];
-        try {
-            $user = new User($this->dataSource, WPC_PLUGIN_API_ENDPOINT);
-            /**
-             * Recursivelly sanitised all data come from external api.
-             * because its not in our control and we don't know what type of data coming through
-             *so its must be sanitised.
-             */
-            $output['data'] = $this->recursiveSanitizeField($user->allUser());
-        } catch (\Exception $exp) {
-            $output['data'] = $exp->getMessage();
-            wp_send_json_error($output, 422);
-        }
-        /**
-         * Allow other plugins/ theme developer to modify ajax response.
-         */
-        $output = apply_filters('wpcp_plugin_user_collection', $output);
-        wp_send_json($output);
-    }
-
-    public function user(): void
-    {
-        // phpcs:disable WordPress.Security.NonceVerification.Recommended
-        $output = [
-            'field_display' => [
-                0 => ['key' => 'id', 'label' => 'ID'],
-                1 => ['key' => 'name', 'label' => 'Name'],
-                2 => ['key' => 'username', 'label' => 'Username'],
-                3 => ['key' => 'email', 'label' => 'Email'],
-                4 => ['key' => 'phone', 'label' => 'Telephone'],
-                5 => ['key' => 'website', 'label' => 'Website'],
-                6 => ['key' => 'address', 'label' => 'Address'],
-                7 => ['key' => 'company', 'label' => 'Company'],
-            ],
-        ];
-        try {
-            $user = new User($this->dataSource, WPC_PLUGIN_API_ENDPOINT);
-            $userId = isset($_REQUEST['user_id']) ? intval($_REQUEST['user_id']) : 0;
-
-            if (empty($userId)) {
-                throw new \Exception('User id is empty');
-            }
-            /**
-             * Recursivelly sanitised all data come from external api.
-             * because its not in our control and we don't know what type of data coming through
-             *so its must be sanitised.
-             */
-            $response = $this->recursiveSanitizeField($user->findUserById($userId));
-            foreach ($response as $key => $value) {
-                $output['data'][$key] = $value;
-                if (in_array($key, ['address', 'company'], true)) {
-                    $value = \array_diff_key($value, ['geo' => "xy",
-                        'catchPhrase' => "xy",
-                        'bs' => "xy", ]);
-                    $output['data'][$key] = implode('<br>', $value);
-                }
-            }
-        } catch (\Exception $exp) {
-            $output['data'] = $exp->getMessage();
-            wp_send_json_error($output, 422);
-        }
-        /**
-         * Allow other plugins/ theme developer to modify ajax response.
-         */
-        $output = apply_filters('wpcp_plugin_single_user', $output);
-        wp_send_json($output);
     }
 
     public function addAjaxUrl(): void
@@ -224,20 +133,5 @@ class Plugin
             wp_enqueue_style('bootstrap');
             wp_enqueue_style('wpcplugin_css');
         }
-    }
-
-    /**
-     * Recursive sanitation for an array
-     *
-     * @param $array
-     *
-     * @return mixed
-     */
-    public function recursiveSanitizeField(array $array): array
-    {
-        foreach ($array as $key => &$value) {
-            $value = is_array($value) ? $this->recursiveSanitizeField($value) : sanitize_text_field($value);
-        }
-        return $array;
     }
 }

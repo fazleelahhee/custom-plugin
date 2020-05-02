@@ -1,6 +1,6 @@
 <?php
 
-namespace WPCPlugin\Tests\DataSource;
+namespace WPCPlugin\Tests\Unit\DataSource;
 
 use PHPUnit\Framework\TestCase;
 use WPCPlugin\Contracts\IDataSourceFactory;
