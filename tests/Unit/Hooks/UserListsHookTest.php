@@ -28,7 +28,6 @@ class UserListsHookTest extends WPCPluginTestCase
 
     public function testApplyFilterHookAdded()
     {
-        $_REQUEST['user_id'] = 1;
         $response = $this->userTestHook->init();
         $this->assertTrue(Filters\applied('wpcp_plugin_user_collection') > 0);
         $this->assertEquals(2, count($response));
