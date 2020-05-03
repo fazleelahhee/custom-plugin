@@ -166,7 +166,7 @@ $npn run production
 Before run the PHP unit test to make sure composer dependencies updated.
 
 ```
-$./vendor/bin/phpunit tests
+$composer test
 PHPUnit 9.2-g1899b60ea by Sebastian Bergmann and contributors.
 
 ...........                                                       11 / 11 (100%)
@@ -182,7 +182,7 @@ OK (11 tests, 11 assertions)
 Before run the PHP code sniffer to make sure composer dependencies updated.
 
 ```
-$./vendor/bin/phpcs
+$composer phpcs
 ................... 19 / 19 (100%)
 
 Time: 2.24 secs; Memory: 16MB
